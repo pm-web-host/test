@@ -1,15 +1,19 @@
 // firebase-config.js
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Initializes Firebase and makes the database instance available globally.
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBwOeykfaxYS1lfFJshm2eU8v5cTcPQbeM",
-  authDomain: "mail-tblood-b8424.firebaseapp.com",
-  projectId: "mail-tblood-b8424",
-  storageBucket: "mail-tblood-b8424.firebasestorage.app",
-  messagingSenderId: "627399245340",
-  appId: "1:627399245340:web:f4a1e5e40db9ea78c3a9d9",
-  measurementId: "G-CEHCSVNYCY"
+  apiKey: "AIzaSyCahBr0Ijw0zpx3M-ogPaFfOEvyBuRX7iE",
+  authDomain: "mail-tblood.firebaseapp.com",
+  projectId: "mail-tblood",
+  storageBucket: "mail-tblood.firebasestorage.app",
+  messagingSenderId: "110577989516",
+  appId: "1:110577989516:web:9cf35ce9099db26ea788a9",
+  measurementId: "G-JLB11MXB8C"
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+// Make db available to other scripts that might need it directly
+window.db = db;

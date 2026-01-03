@@ -11,11 +11,17 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-  <!-- Your Firebase Config -->
+  
+  <!-- Your Firebase Config (must be loaded before api-client.js) -->
+  <script src="firebase-config.js"></script>
+  
+  <!-- Your API Client Wrapper -->
   <script src="api-client.js"></script>
+  
   <style>
     /* Reset & Base */
     * {
@@ -375,36 +381,23 @@
   
   <!-- Contact Form Script -->
   <script>
-    // This file handles the contact form submission to Firebase Firestore
     document.addEventListener('DOMContentLoaded', () => {
-      // Get form elements
       const contactForm = document.getElementById('contact-form');
       const submitBtn = document.querySelector('.btn-accent');
-      
-      // Get message elements
       const successMessage = document.getElementById('success-message');
       const errorMessage = document.getElementById('error-message');
       
-      // Form submission handler
       if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           
-          // Hide any previous messages
           successMessage.style.display = 'none';
           errorMessage.style.display = 'none';
           
-          // Disable submit button and show loading state
           submitBtn.disabled = true;
           submitBtn.textContent = 'Sending...';
           
           try {
-            // Check if Firebase is initialized
-            if (typeof db === 'undefined') {
-              throw new Error('Firebase is not initialized. Please check your api-client.js file.');
-            }
-            
-            // Get form values
             const formData = new FormData(contactForm);
             const contactData = {
               category: formData.get('category'),
@@ -412,76 +405,25 @@
               email: formData.get('email'),
               subject: formData.get('subject'),
               message: formData.get('message'),
-              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-              status: 'unread' // To track if the message has been read
+              status: 'unread'
             };
             
-            // Save to Firestore
-            await db.collection('contacts').add(contactData);
+            await window.tbloodAPI.submitForm('contacts', contactData);
             
-            // Show success message
             successMessage.style.display = 'block';
-            
-            // Reset form
             contactForm.reset();
             
-            // Redirect to thank you page after a delay
             setTimeout(() => {
               window.location.href = 'thankyou.html';
             }, 2000);
+
           } catch (error) {
             console.error('Error sending message:', error);
+            errorMessage.textContent = `Error: ${error.message || 'Unknown error occurred. Please try again.'}`;
+            errorMessage.style.display = 'block';
             
-            // Fallback: Store in localStorage
-            try {
-              const formData = new FormData(contactForm);
-              const contactData = {
-                category: formData.get('category'),
-                name: formData.get('name'),
-                email: formData.get('email'),
-                subject: formData.get('subject'),
-                message: formData.get('message'),
-                timestamp: new Date().toISOString(),
-                status: 'unread',
-                savedLocally: true
-              };
-              
-              const submissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
-              submissions.push({
-                ...contactData,
-                id: Date.now().toString()
-              });
-              localStorage.setItem('contactSubmissions', JSON.stringify(submissions));
-              
-              // Show modified success message
-              successMessage.textContent = 'Your message has been saved locally. We will process it when our system is back online.';
-              successMessage.style.display = 'block';
-              
-              // Reset form
-              contactForm.reset();
-              
-              // Redirect to thank you page after a delay
-              setTimeout(() => {
-                window.location.href = 'thankyou.html';
-              }, 3000);
-            } catch (fallbackError) {
-              console.error('Fallback storage also failed:', fallbackError);
-              
-              // Provide more specific error messages
-              if (error.code === 'permission-denied') {
-                errorMessage.textContent = 'Permission denied. The database is not configured to accept submissions.';
-              } else if (error.code === 'unavailable') {
-                errorMessage.textContent = 'Service unavailable. Please check your internet connection and try again.';
-              } else {
-                errorMessage.textContent = `Error: ${error.message || 'Unknown error occurred. Please try again.'}`;
-              }
-              
-              errorMessage.style.display = 'block';
-              
-              // Reset button state
-              submitBtn.disabled = false;
-              submitBtn.textContent = 'Send Message';
-            }
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Message';
           }
         });
       }
@@ -490,7 +432,6 @@
   
   <!-- Mobile Menu Script -->
   <script>
-    // Toggle mobile menu
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
 

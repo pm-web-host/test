@@ -1,65 +1,89 @@
 // api-client.js
-// সার্ভার-সাইডের সাথে যোগাযোগ করার জন্য ক্লায়ন্ট ফাইল
+// A client-side wrapper for Firebase Firestore operations.
 
 class TbloodAPI {
-  constructor(baseURL = '') {
-    this.baseURL = baseURL || (window.location.origin + '/api');
+  constructor() {
+    // Check if Firebase was initialized in firebase-config.js
+    if (typeof db === 'undefined') {
+      console.error("Firebase is not initialized. Make sure firebase-config.js is loaded first.");
+    }
   }
 
-  // ফর্ম ডেটা সংরক্ষণ করা
+  /**
+   * Saves form data to a Firestore collection.
+   * @param {string} collection - The name of the collection (e.g., 'contacts').
+   * @param {object} data - The data to save.
+   * @returns {Promise} - A promise that resolves when the data is saved.
+   */
   async submitForm(collection, data) {
+    if (typeof db === 'undefined') {
+      throw new Error('Firebase is not initialized.');
+    }
+    
     try {
-      const response = await fetch(`${this.baseURL}/submit-form`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ collection, data })
-      });
+      // Add a server-side timestamp
+      const dataWithTimestamp = {
+        ...data,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
       
-      if (!response.ok) {
-        throw new Error('Failed to submit form');
-      }
-      
-      return await response.json();
+      const docRef = await db.collection(collection).add(dataWithTimestamp);
+      console.log("Document written with ID: ", docRef.id);
+      return { success: true, id: docRef.id };
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error adding document: ", error);
       throw error;
     }
   }
 
-  // ডাটা পেতে পাওয়া
+  /**
+   * Retrieves all documents from a Firestore collection.
+   * @param {string} collection - The name of the collection.
+   * @returns {Promise<Array>} - A promise that resolves with an array of documents.
+   */
   async getData(collection) {
+    if (typeof db === 'undefined') {
+      throw new Error('Firebase is not initialized.');
+    }
+
     try {
-      const response = await fetch(`${this.baseURL}/get-data/${collection}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to get data');
-      }
-      
-      return await response.json();
+      const snapshot = await db.collection(collection).orderBy('timestamp', 'desc').get();
+      const documents = [];
+      snapshot.forEach(doc => {
+        documents.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      return documents;
     } catch (error) {
-      console.error('Error getting data:', error);
+      console.error("Error getting documents: ", error);
       throw error;
     }
   }
 
-  // Firebase কনফিগারেশন পেতে পাওয়া (সার্ভার-সাইড থেকে)
-  async getFirebaseConfig() {
+  /**
+   * Updates a specific field in a document.
+   * @param {string} collection - The name of the collection.
+   * @param {string} docId - The ID of the document to update.
+   * @param {object} data - The fields to update.
+   * @returns {Promise} - A promise that resolves when the document is updated.
+   */
+  async updateDocument(collection, docId, data) {
+    if (typeof db === 'undefined') {
+      throw new Error('Firebase is not initialized.');
+    }
+
     try {
-      const response = await fetch(`${this.baseURL}/firebase-config`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to get Firebase config');
-      }
-      
-      return await response.json();
+      await db.collection(collection).doc(docId).update(data);
+      console.log(`Document ${docId} updated successfully.`);
+      return { success: true };
     } catch (error) {
-      console.error('Error getting Firebase config:', error);
+      console.error("Error updating document: ", error);
       throw error;
     }
   }
 }
 
-// গ্লোবাল API ইনস্ট্যান্স তৈরি করুন
+// Create a global API instance that other scripts can use
 window.tbloodAPI = new TbloodAPI();

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Admin Dashboard - Tblood</title>
+  <link rel="icon" href="tblood.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+  
+  <!-- Your Firebase Config (must be loaded before api-client.js) -->
+  <script src="firebase-config.js"></script>
+  
+  <!-- Your API Client Wrapper -->
+  <script src="api-client.js"></script>
+
+  <style>
+    /* Reset & Base */
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Open Sans', sans-serif;
+      background: #f4f6f9;
+      color: #222;
+      overflow-x: hidden;
+      padding-top: 60px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* CSS Variables */
+    :root {
+      --accent: #34b276;
+      --primary: #780000;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      background-color: rgba(206, 40, 40, 0.95);
+      padding: 0.7rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-family: 'Montserrat', sans-serif;
+      color: white;
+      font-weight: 700;
+      font-size: 1.5rem;
+      text-decoration: none;
+    }
+
+    .logo img {
+      height: 50px;
+      margin-right: 10px;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+      margin: 0;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .nav-links li a {
+      font-family: 'Open Sans', sans-serif;
+      color: white;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      transition: background-color 0.2s;
+      display: block;
+    }
+    .nav-links li a:hover,
+    .nav-links li a.active {
+      background-color: rgba(183, 28, 28, 0.8);
+      color: white;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .hamburger span {
+      height: 3px;
+      width: 25px;
+      background: #fff;
+      margin-bottom: 4px;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    /* Dashboard Styles */
+    .dashboard-container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.08);
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+      height: 100%;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .table-container {
+      margin-top: 30px;
+      overflow-x: auto;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th {
+      background-color: rgba(206, 40, 40, 0.1);
+      color: var(--primary);
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 15px;
+    }
+
+    .table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .table tr:hover {
+      background-color: rgba(0,0,0,0.02);
+    }
+
+    .badge-status {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .badge-new {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .badge-read {
+      background-color: #e8f5e9;
+      color: #388e3c;
+    }
+
+    .btn-action {
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      margin-right: 5px;
+    }
+
+    /* gradient */
+    .tblood-gradient {
+      background: linear-gradient(to right, #780000, #c1121f);
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+    }
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    /* Debug Info */
+    .debug-info {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
+      .nav-links {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        height: calc(100vh - 60px);
+        background: rgba(206, 40, 40, 0.95);
+        flex-direction: column;
+        align-items: flex-start;
+        width: 200px;
+        padding: 1rem;
+        transform: translateX(100%);
+      }
+      .nav-links.open {
+        transform: translateX(0);
+      }
+      .nav-links li {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+      .nav-links li a {
+        width: 100%;
+        padding: 0.8rem 1rem;
+      }
+      .hamburger span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+      .hamburger span:nth-child(2) {
+        opacity: 0;
+      }
+      .hamburger span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+      }
+
+      .stat-card {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+      <img src="tblood.png" alt="Tblood Logo" />
+      Tblood
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="Mail-Tblood.html">Contact</a></li>
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+    </ul>
+    <div class="hamburger" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </nav>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="mb-0">Contact Messages Dashboard</h1>
+      <div>
+        <button id="debug-btn" class="btn btn-outline-secondary me-2">
+          <i class="fas fa-bug me-2"></i>Debug Info
+        </button>
+        <button id="refresh-btn" class="btn btn-outline-danger">
+          <i class="fas fa-sync-alt me-2"></i>Refresh Data
+        </button>
+      </div>
+    </div>
+
+    <!-- Debug Information (hidden by default) -->
+    <div id="debug-info" class="debug-info" style="display: none;">
+      <h5>Debug Information</h5>
+      <div id="debug-content">Loading debug information...</div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-md-4 col-sm-6 mb-4">
+        <div class="stat-card">
+          <div class="stat-icon bg-light text-danger">
+            <i class="fas fa-envelope fa-2x"></i>
+          </div>
+          <div class="stat-number" id="total-messages">0</div>
+          <div class="stat-label">Total Messages</div>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6 mb-4">
+        <div class="stat-card">
+          <div class="stat-icon bg-light text-primary">
+            <i class="fas fa-envelope-open fa-2x"></i>
+          </div>
+          <div class="stat-number" id="unread-messages">0</div>
+          <div class="stat-label">Unread Messages</div>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6 mb-4">
+        <div class="stat-card">
+          <div class="stat-icon bg-light text-success">
+            <i class="fas fa-envelope-open-text fa-2x"></i>
+          </div>
+          <div class="stat-number" id="read-messages">0</div>
+          <div class="stat-label">Read Messages</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Table -->
+    <div class="stat-card">
+      <h3 class="mb-3">Recent Messages</h3>
+      <div id="loading" class="loading-spinner">
+        <div class="spinner-border text-danger" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      <div id="messages-container" style="display: none;">
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="messages-table">
+              <!-- Messages will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Dashboard Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDashboardData();
+
+      document.getElementById('debug-btn').addEventListener('click', () => {
+        const debugInfo = document.getElementById('debug-info');
+        if (debugInfo.style.display === 'none') {
+          debugInfo.style.display = 'block';
+          showDebugInfo();
+        } else {
+          debugInfo.style.display = 'none';
+        }
+      });
+
+      document.getElementById('refresh-btn').addEventListener('click', () => {
+        loadDashboardData();
+      });
+
+      function showDebugInfo() {
+        let debugContent = '';
+        if (typeof firebase === 'undefined') {
+          debugContent += 'Firebase SDK not loaded<br>';
+        } else {
+          debugContent += 'Firebase SDK loaded<br>';
+          if (typeof db === 'undefined') {
+            debugContent += 'Firestore not initialized (db variable not found)<br>';
+          } else {
+            debugContent += 'Firestore initialized<br>';
+            debugContent += 'Firebase app name: ' + firebase.app().name + '<br>';
+          }
+        }
+        const localSubmissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+        debugContent += 'Local submissions count: ' + localSubmissions.length + '<br>';
+        debugContent += 'Current URL: ' + window.location.href + '<br>';
+        debugContent += 'Environment: ' + (window.location.hostname === 'localhost' ? 'Local' : 'Production') + '<br>';
+        document.getElementById('debug-content').innerHTML = debugContent;
+      }
+
+      function loadDashboardData() {
+        document.getElementById('loading').style.display = 'flex';
+        document.getElementById('loading').innerHTML = '<div class="spinner-border text-danger" role="status"><span class="visually-hidden">Loading...</span></div>';
+        document.getElementById('messages-container').style.display = 'none';
+
+        window.tbloodAPI.getData('contacts')
+          .then(messages => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('messages-container').style.display = 'block';
+            displayMessages(messages, false);
+          })
+          .catch(error => {
+            console.error('Error loading messages:', error);
+            const localSubmissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+            if (localSubmissions.length > 0) {
+              document.getElementById('loading').innerHTML = 
+                '<div class="alert alert-warning">Error loading from Firestore. Showing messages saved locally.</div>';
+              displayMessages(localSubmissions, true);
+            } else {
+              document.getElementById('loading').innerHTML = 
+                `<div class="alert alert-danger">Error loading messages: ${error.message}</div>`;
+            }
+          });
+      }
+      
+      function displayMessages(messages, isLocal) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('messages-container').style.display = 'block';
+        
+        document.getElementById('total-messages').textContent = messages.length;
+        document.getElementById('unread-messages').textContent = 
+          messages.filter(m => m.status === 'unread').length;
+        document.getElementById('read-messages').textContent = 
+          messages.filter(m => m.status === 'read').length;
+        
+        const tableBody = document.getElementById('messages-table');
+        tableBody.innerHTML = '';
+        
+        if (messages.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No messages found</td></tr>';
+          return;
+        }
+        
+        messages.forEach(message => {
+          const row = document.createElement('tr');
+          
+          const date = message.timestamp ? 
+            (isLocal ? new Date(message.timestamp).toLocaleDateString() : 
+             new Date(message.timestamp.toDate()).toLocaleDateString()) : 
+            'N/A';
+          
+          const statusBadge = message.status === 'unread' ? 
+            '<span class="badge-status badge-new">New</span>' : 
+            '<span class="badge-status badge-read">Read</span>';
+          
+          row.innerHTML = `
+            <td>${date}</td>
+            <td>${message.name || 'N/A'}</td>
+            <td>${message.email || 'N/A'}</td>
+            <td>${message.subject || 'N/A'}</td>
+            <td>${statusBadge}</td>
+            <td>
+              <button class="btn btn-sm btn-primary btn-action view-message" data-id="${message.id}" data-local="${isLocal}">
+                <i class="fas fa-eye"></i> View
+              </button>
+              ${message.status === 'unread' && !isLocal ? 
+                `<button class="btn btn-sm btn-success btn-action mark-read" data-id="${message.id}">
+                  <i class="fas fa-check"></i> Mark Read
+                </button>` : ''}
+            </td>
+          `;
+          
+          tableBody.appendChild(row);
+        });
+        
+        document.querySelectorAll('.view-message').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const messageId = btn.getAttribute('data-id');
+            const isLocal = btn.getAttribute('data-local') === 'true';
+            viewMessage(messageId, isLocal);
+          });
+        });
+        
+        document.querySelectorAll('.mark-read').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const messageId = btn.getAttribute('data-id');
+            markAsRead(messageId);
+          });
+        });
+      }
+      
+      function viewMessage(messageId, isLocal) {
+        if (isLocal) {
+          const submissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+          const message = submissions.find(m => m.id === messageId);
+          if (message) {
+            alert(`From: ${message.name || 'N/A'} (${message.email || 'N/A'})\nSubject: ${message.subject || 'N/A'}\nDate: ${message.timestamp ? new Date(message.timestamp).toLocaleString() : 'N/A'}\n\nMessage:\n${message.message || 'N/A'}`);
+          }
+        } else {
+          db.collection('contacts').doc(messageId).get()
+            .then(doc => {
+              if (doc.exists) {
+                const message = doc.data();
+                alert(`From: ${message.name || 'N/A'} (${message.email || 'N/A'})\nSubject: ${message.subject || 'N/A'}\nDate: ${message.timestamp ? new Date(message.timestamp.toDate()).toLocaleString() : 'N/A'}\n\nMessage:\n${message.message || 'N/A'}`);
+              }
+            })
+            .catch(error => {
+              console.error('Error viewing message:', error);
+              alert('Error viewing message. Please try again.');
+            });
+        }
+      }
+      
+      function markAsRead(messageId) {
+        window.tbloodAPI.updateDocument('contacts', messageId, { status: 'read' })
+          .then(() => {
+            console.log('Message marked as read');
+            loadDashboardData();
+          })
+          .catch(error => {
+            console.error('Error marking message as read:', error);
+            alert('Error marking message as read. Please try again.');
+          });
+      }
+    });
+  </script>
+  
+  <!-- Mobile Menu Script -->
+  <script>
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
+
+    hamburger.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    navLinks.addEventListener('click', e => {
+      if (e.target.tagName === 'A') {
+        navLinks.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>
