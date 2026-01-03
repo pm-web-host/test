@@ -7,11 +7,11 @@ const admin = require('firebase-admin');
 // Firebase সার্ভিস অ্যাকাউন্ট কী (এটা সার্ভারে থাকবে)
 const serviceAccount = {
   "type": "service_account",
-  "project_id": "bbrerr13xr",
-  "private_key_id": "07dd9512342fc5a39c5a3d7ffbbc4c1e118e3887",
-  "private_key": ""-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC2wh0PXz/Rben9\nYjIMUhlpZG3BkYYGMhN45gr54ZA7ZCOw9t7ENvD8rrad3JmEhMWFXcQb7qcvW+a7\nfJmErzEcXSA7+nTEjwh9dE5uR6AeMCFTV0k7vf3h+HaRaLhwTE05su3xDrcyonzY\niY95E4LUzDAtrxhvLX+O/YNbvq2nZdxVP2GOyfY0tpCUWzESonKN5JGxG25n4k9C\nwYRgg3XeTLXrFkpZQG295jBVBXmpI7hjQTMj5GCGfzf4Xy1w5rOgJnDvfrPhSwgq\nBBZ/Df5QEGMrKUKUk8WujBFrpvtEKGc73p+tKOBnMLaaMGG7kb4hcb6gxp2H1TJN\ndSRQ601bAgMBAAECggEACOGdtD8JOhNmK8byBAZDWjX5XXmbHUGhZPPXnwrBTcQ7\n4HWGyttD/SDnxVEl8WTbDR71kPPukk8cLd/2vUDJmVrEiRWj8goPZrqttbnrrpE2\nircdsHZhrZxmSq0KStlyZqDq45bhppId5g9SoRbRJKfi7tK+VGd4y56cm8CZmMkL\nPlHPDEpty98G6NmxWJ77npwItLC7Gre/EXBERw/5RfxAgBGKW5l/lIv4MkFh0g/N\nhLGkDS5mpHFozofZ5sRsU8HjAWvsVTTnNIqtHF6Im/4zk7vIqK22R8hcS/KEcH5t\nKmg37BE+r2R6Do7KDZDv9phPEGtkq7j4Y6EuCQw3VQKBgQDdM3FDlvBkaGFv2AJb\nhAtonI0LAyTsIGXM1p37dYNHyBvSHv00NUB0zqMDQPyxfA/JJnl4J11Lh9yevv1t\nrjO1TXqMPIZ5q+bCj1ST88gPilwGXVaiw/uxSCCKl3wvN8fiYG450ArJqE6aVxBp\nORaaYbHmeBSGej0ww/wNg2+IlQKBgQDTgnIXbCm6qUKr2EjZcZKjhD06xLquiHkV\nbKJmGZaLu9qn1YatsAxqwB1uWzf/6VH4AzpfyB+DDHu6R2i1HSsupOkpp5MdTRk3\nb1DxX1HpQ5iqZ1W1HmnIln1rIE2LTPJ28BfHOOmetmBrdiOUOCEfvaM6tugLk3vW\nPmsdxwvSLwKBgHFSlHlDD77w9tIcwQBvgoTCh0OYBcduxZiObvtPdcVFkHMyaxff\nHDl7T2owVgT7gP7VVi+nQxWZ8f3l7OHO+DCvE9Raga490gfk9DikEN9dS8367ZKP\ngxeM0xcNipKKKj4glvfJTG2Ja1OIvSCbHahT2pcu95z5bPXZwfyOVIqNAoGAG5Ff\nCYqBjeDN3dQc+qqA8GsmB+joZCNJlO9J44DmTGQ5xbJhEXZmx+suatnc3LAujOLu\n0tkkslIINmlkTmb03+mCsnkzBZis9rq9lBhWds7msR8y3p6OLyTeR/433TY0TChT\nERZr7NHck2Uckg8W0ipHgjmg2RFqDKyqDYGKGuUCgYEAoVVOfOQV8Bz7MKMlRy4c\n05z+WdeQws1avE50TwYXxN+kOc0R334uQq/OMEolChS+8UFMoTrtOyz+ONFeAJT/\nY+VtJu1dOG7eCtJgYRM2c2kcg4ue4T0NsV+oGZf5oV500AY94g1PHsdecILzWVu0\n2srGEcVcFqfKC7m6+kVVZ3M=\n-----END PRIVATE KEY-----\n",
-  "client_email": "firebase-adminsdk-fbsvc@bbrerr13xr.iam.gserviceaccount.com",
-  "client_id": "110219151397864255958",
+  "project_id": "mail-tblood-b8424",
+  "private_key_id": "2e0578f4aa4ddae9a00e20e6c98512ba56a4b7ac",
+  "private_key": ""-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDGmXeVLJY7aLFA\n661T24oIGs3BfBTsam7oEmm4rvohdiRFVJcddeiVnHwlMPzct/bw5bNWZWXDbnfH\nQqECOeGBDIg4ym0wjR4yPR9ZbV/5r2NqCl9aafyLcwZUjUhfn9SiX0k9E1mQ6fpg\n+AhA2/ZqjUM/4yZXbhqztvhJ3GgrBj4pzy0q1mXKnYeMEMpTjqcAwC2W4JsjZUy7\nhYOiASiXSmL8cmYOav0wG5PGPRREqYNTr1B6nW+aXJOC1K77a7k5eFSuPJ2yvgO8\nzogRwHlQsrbqb7eXCpwkEDoz1RqHW/rqA4ZDs9djWmt5gPZN20rIkZ7s7FuC4c46\n7dqGy2mLAgMBAAECggEAUtyVWFhSFleIHV4341UmMlt8nc33rOx7ebi1A6l+E5gH\naiXxJwmbEVFJOvtFhZH8JmawfMuxuejNcQYLx7H+tKlV7NwI0skOYEfAXL+V28eh\n4wyQ3Fh8VnKXoY+RMtStE1JObH02UZBON0dFqkocdjiaZn2P8cquuW0OC0M68zfb\naQXgoYooCVxyQhjiMHDhEyqjwPi3fL1BNj+aOtyGcYmZzXj0ZPkpBxW3o0bu8MjM\nHNndE6RVlDQLMNHGgdptXBBPzQm8YtExXdvcFIy7PP8Bygd4+BAhIGPnh+6x4U9O\nYvjyaG/ZkS8zRBigZHx7iIuGjj3f43goPhSzihcTAQKBgQDlQxOiiIKY1M9ZhyH0\nL/3BzbNC+/F+lc8bUWBd+I46GX9CbGq2sE7bxF3noMVfurMb9mWyis+M6c/Y1DdQ\njlOL1mijw97ObJ9ACMsGpSByH3VFiwTpyY25FjKBXlKmsYn7TwwGbClaqxjgcbhS\n1j2XBNv7Y4yc8Q706aU6WUmSeQKBgQDdwutiuBixELn/mK0voRDOZIXi22EGyBy6\nccbr5I4IRjgSamfWCL/gG5y6vfj1LZ3BCfILKSmfprkTBAbBjn1yO2MqbJlXBUgR\nmwYb2/2Alc50u8EO0XJ3DAV+TZZIi1xpfT0akUQQjtSZrfHwo4kHwKXE2XkTyl7y\nkxKI0i67IwKBgEa2d7nsDQwCp6nfilN88fHy9lW0y/nVTzoH0YdqgMPe1WexdQDA\nRLJ4UNZ+uiIavd/kEd4N/pJiE5+3ZRBNtestyLyqT3CwBDaF/8ke6XEJzuwSQwOx\nDSuHczB/3VJY9Ew1R2o7tk2m9FdV/BpgxkJsV0WkoNxPZeOYpUPoAk9RAoGAaG+z\nivpIJptJ/SVZ6mRgFdMheoT2XMtBPEz48X7hpOPs5D9YR2Q3eMOIPCnbZRvmf1K/\nuqHYCGfsIRh0VhNU4Mc3HHOog2LpXeE0L0qbSENEx5TkhqX80jPHIoRHkkKPct6Y\nODrRYzrgxL82ga2CizQe3WXNr5ROws6gm+7gMyECgYEAhS3rZMlOXEI1eAY8HXfc\nGtW3H2UvS/XhT6HSAniKFllP6e6uOWwe4WoxzqMJeOML/1GAnQPWwQr5UZxlYo4R\nMdSmJC+qpHavxWjSoqWecxgXdmto1Tucvv0sfLtK11wcJ3pNHmaI0z1aNWiZE/0x\nehKbaFE+6W8hiDOZjf0iGsY=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@mail-tblood-b8424.iam.gserviceaccount.com",
+  "client_id": "112379748462930871508",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
   "token_uri": "https://oauth2.googleapis.com/token"
 };
@@ -19,7 +19,7 @@ const serviceAccount = {
 // Firebase Admin SDK ইনিশিয়ালাইজ করুন
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  projectId: 'bbrerr13xr'
+  projectId: 'mail-tblood-b8424'
 });
 
 const db = admin.firestore();
@@ -39,9 +39,9 @@ app.use(express.static('public'));
 app.get('/api/firebase-config', (req, res) => {
   // শুধু অনুমতি ডোমেইন থেকেই ডেটা দিন
   const safeConfig = {
-    projectId: 'bbrerr13xr',
-    authDomain: 'bbrerr13xr.firebaseapp.com',
-    storageBucket: 'bbrerr13xr.firebasestorage.app'
+    projectId: 'mail-tblood-b8424',
+    authDomain: 'mail-tblood-b8424.firebaseapp.com',
+    storageBucket: 'mail-tblood-b8424.firebasestorage.app'
   };
   
   res.json(safeConfig);
